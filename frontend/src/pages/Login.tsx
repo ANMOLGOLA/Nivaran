@@ -26,46 +26,50 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       const user = result.user;
       const idToken = await user.getIdToken();
 
-      // Register/login with our backend
-      const res = await fetch('/api/auth/google', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify({
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName,
-          photoURL: user.photoURL,
-        })
-      });
+      try {
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify({
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName,
+            photoURL: user.photoURL,
+          })
+        });
 
-      if (res.ok) {
-        const data = await res.json();
-        toast.success(`Welcome, ${user.displayName?.split(' ')[0]}!`, {
-          description: 'Logged in via Google'
-        });
-        onLoginSuccess({
-          ...data.user,
-          idToken,
-          photoURL: user.photoURL,
-        });
-      } else {
-        // Firebase auth succeeded but backend registration failed — still allow login
-        // using Firebase user data directly (graceful degradation)
-        toast.success(`Welcome, ${user.displayName?.split(' ')[0]}!`);
-        onLoginSuccess({
-          id: user.uid,
-          name: user.displayName || 'Citizen',
-          email: user.email,
-          phone: '',
-          role: 'CITIZEN',
-          languagePref: 'en',
-          photoURL: user.photoURL,
-          idToken,
-        });
+        if (res.ok) {
+          const data = await res.json();
+          toast.success(`Welcome, ${user.displayName?.split(' ')[0]}!`, {
+            description: 'Logged in via Google'
+          });
+          onLoginSuccess({
+            ...data.user,
+            idToken,
+            photoURL: user.photoURL,
+          });
+          return;
+        }
+      } catch (fetchErr) {
+        console.warn("Backend fetch failed, degrading gracefully to Firebase auth only:", fetchErr);
       }
+      
+      // Fallback: Firebase auth succeeded but backend registration failed or network error
+      // Use Firebase user data directly (graceful degradation)
+      toast.success(`Welcome, ${user.displayName?.split(' ')[0]}!`);
+      onLoginSuccess({
+        id: user.uid,
+        name: user.displayName || 'Citizen',
+        email: user.email,
+        phone: '',
+        role: 'CITIZEN',
+        languagePref: 'en',
+        photoURL: user.photoURL,
+        idToken,
+      });
     } catch (err: any) {
       console.error(err);
       if (err.code === 'auth/popup-closed-by-user') {
