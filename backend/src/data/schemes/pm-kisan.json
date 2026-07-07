@@ -1,0 +1,21 @@
+{
+  "name": "PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)",
+  "benefits": "Financial benefit of Rs. 6,000 per year in three equal installments of Rs. 2,000 each, directly transferred into the bank accounts of the farmers.",
+  "eligibility": "All landholding farmers' families having cultivable landholding in their names are eligible. Exclusion criteria include institutional landholders, farmer families holding constitutional posts, serving/retired government officers and employees, professionals (doctors, engineers, lawyers, CA), and individuals who paid income tax in the last assessment year.",
+  "requiredDocuments": [
+    "Aadhaar Card",
+    "Landholding documents (Khatauni/Patta)",
+    "Bank Account Details",
+    "Mobile Number linked with Aadhaar"
+  ],
+  "faq": [
+    {
+      "question": "Who is eligible for PM-KISAN?",
+      "answer": "All small and marginal landholding farmer families who own cultivable land in their names are eligible, subject to exclusion criteria like paying income tax or holding government positions."
+    },
+    {
+      "question": "What is the cash benefit amount?",
+      "answer": "The scheme provides a benefit of Rs. 6,000 per year, paid in three installments of Rs. 2,000 every four months."
+    }
+  ]
+}

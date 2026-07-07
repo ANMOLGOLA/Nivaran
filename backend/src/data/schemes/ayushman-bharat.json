@@ -1,0 +1,21 @@
+{
+  "name": "Ayushman Bharat PM-JAY (Pradhan Mantri Jan Arogya Yojana)",
+  "benefits": "Free health insurance cover of up to Rs. 5 Lakh per family per year for secondary and tertiary care hospitalization across all empaneled public and private hospitals.",
+  "eligibility": "Targeted at poor, deprived rural families and identified occupational categories of urban workers' families as per the Socio-Economic Caste Census (SECC) 2011 database. Families living in one-room houses with kucha walls, landless households, SC/ST households, and manual scavenger families are eligible. No family size limit.",
+  "requiredDocuments": [
+    "Aadhaar Card",
+    "Ration Card",
+    "PM-JAY Letter / PM-JAY IDCard",
+    "Active Mobile Number"
+  ],
+  "faq": [
+    {
+      "question": "What is the insurance cover limit?",
+      "answer": "Ayushman Bharat provides a health insurance cover of up to Rs. 5 Lakh per family per year."
+    },
+    {
+      "question": "Are pre-existing conditions covered?",
+      "answer": "Yes, all pre-existing medical conditions are covered from day one of enrollment in the scheme."
+    }
+  ]
+}

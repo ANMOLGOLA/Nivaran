@@ -1,0 +1,22 @@
+{
+  "name": "PMAY (Pradhan Mantri Awas Yojana - Housing for All)",
+  "benefits": "Financial assistance of Rs. 1.2 Lakh in plains and Rs. 1.3 Lakh in hilly/difficult areas for constructing a permanent (pucca) house. It also offers interest subsidies on home loans for low and middle-income groups in urban areas.",
+  "eligibility": "Families who do not own a pucca house anywhere in India. Families belonging to Economically Weaker Section (EWS, income up to Rs. 3 Lakh), Low Income Group (LIG, income up to Rs. 6 Lakh), and Middle Income Groups (MIG-I & MIG-II, income up to Rs. 18 Lakh) are eligible. Priority is given to women, SC/ST, and disabled individuals.",
+  "requiredDocuments": [
+    "Aadhaar Card",
+    "Income Certificate",
+    "Proof of Land Ownership or Land Lease Agreement",
+    "Affidavit stating that no family member owns a pucca house in India",
+    "Bank Passbook"
+  ],
+  "faq": [
+    {
+      "question": "What is the financial aid amount?",
+      "answer": "For rural beneficiaries, PMAY-G provides direct financial aid of Rs. 1.2 Lakh (plains) or Rs. 1.3 Lakh (hilly areas) directly into their bank accounts."
+    },
+    {
+      "question": "Can I apply if I own a kutcha house?",
+      "answer": "Yes, if you own a kutcha house or a temporary shelter, you are eligible to apply for assistance to build a permanent pucca house."
+    }
+  ]
+}

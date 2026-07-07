@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Login } from './pages/Login';
 import { Toaster } from 'sonner';
 import { ShieldAlert, LogOut, User as UserIcon, LayoutDashboard, Globe, AlertCircle } from 'lucide-react';
+import { AiChatWidget } from './components/AiChatWidget';
 
 interface User {
   id: string;
@@ -140,6 +141,9 @@ const App: React.FC = () => {
           <footer className="bg-gray-100 border-t border-gray-200 py-6 text-center text-xs text-gray-400">
             <p>© 2026 Ministry of Electronics & IT, Government of India. Powered by Smart Bharat.</p>
           </footer>
+          
+          {/* AI Companion Widget */}
+          <AiChatWidget />
         </div>
       )}
     </div>
