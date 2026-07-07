@@ -1,6 +1,6 @@
 import React from 'react';
-import { AppUser } from '../App';
-import { Shield, User, Mail, Phone, Calendar } from 'lucide-react';
+import type { AppUser } from '../App';
+import { Shield, Mail, Phone, Calendar } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export const ProfilePage: React.FC<{ user: AppUser }> = ({ user }) => {

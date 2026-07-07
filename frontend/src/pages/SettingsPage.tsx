@@ -1,6 +1,6 @@
 import React from 'react';
-import { AppUser } from '../App';
-import { Bell, Shield, Languages, Moon } from 'lucide-react';
+import type { AppUser } from '../App';
+import { Bell, Shield, Languages } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export const SettingsPage: React.FC<{ user: AppUser }> = () => {

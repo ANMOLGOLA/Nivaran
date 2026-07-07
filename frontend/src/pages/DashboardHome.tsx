@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, ListChecks, BarChart3, Shield, Zap, ArrowRight, HeartHandshake, Landmark, ChevronRight } from 'lucide-react';
+import { MapPin, BarChart3, Shield, Zap, ArrowRight, HeartHandshake, Landmark, ChevronRight } from 'lucide-react';
 import type { AppUser } from '../App';
-import { useLanguage } from '../context/LanguageContext';
 
 interface Props { user: AppUser }
 
@@ -19,7 +18,6 @@ const STATS = [
 ];
 
 export const DashboardHome: React.FC<Props> = ({ user }) => {
-  const { t } = useLanguage();
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Suprabhat' : hour < 17 ? 'Namaskar' : 'Shubh Sandhya';
 
