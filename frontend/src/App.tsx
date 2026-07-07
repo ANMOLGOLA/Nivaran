@@ -8,9 +8,10 @@ import { DashboardHome } from './pages/DashboardHome';
 import { ReportIssuePage } from './pages/ReportIssuePage';
 import { MyComplaintsPage } from './pages/MyComplaintsPage';
 import { ComplaintDetailPage } from './pages/ComplaintDetailPage';
+import { SchemesPage } from './pages/SchemesPage';
 import { PublicDashboard } from './pages/PublicDashboard';
 import { AiChatWidget } from './components/AiChatWidget';
-import { LayoutDashboard, MapPin, ListChecks, BarChart3, LogOut, Loader2 } from 'lucide-react';
+import { LayoutDashboard, MapPin, ListChecks, BarChart3, LogOut, Loader2, Globe } from 'lucide-react';
 
 export interface AppUser {
   id: string;
@@ -27,6 +28,7 @@ const NAV_LINKS = [
   { path: '/dashboard', label: 'Home', icon: LayoutDashboard },
   { path: '/report', label: 'Report Issue', icon: MapPin },
   { path: '/my-complaints', label: 'My Complaints', icon: ListChecks },
+  { path: '/schemes', label: 'Schemes', icon: Globe },
   { path: '/public-dashboard', label: 'Public Dashboard', icon: BarChart3 },
 ];
 
@@ -230,6 +232,14 @@ const App: React.FC = () => {
               element={
                 <AppShell user={user} onLogout={handleLogout}>
                   <MyComplaintsPage user={user} />
+                </AppShell>
+              }
+            />
+            <Route
+              path="/schemes"
+              element={
+                <AppShell user={user} onLogout={handleLogout}>
+                  <SchemesPage user={user} />
                 </AppShell>
               }
             />
