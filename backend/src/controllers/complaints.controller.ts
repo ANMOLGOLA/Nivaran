@@ -125,7 +125,7 @@ Status: ${complaint.status}
 Kindly escalate this to the senior officer for immediate attention.
 
 Regards,
-Smart Bharat Citizen`;
+Nivaran Citizen`;
   }
 
   try {

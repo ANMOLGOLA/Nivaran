@@ -88,10 +88,10 @@ export const PublicDashboard: React.FC = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF9933] to-orange-600 flex items-center justify-center">
-              <span className="text-white font-black text-sm">SB</span>
+              <span className="text-white font-black text-sm">NV</span>
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white">Smart Bharat</h1>
+              <h1 className="text-2xl font-black text-white">Nivaran</h1>
               <p className="text-[#FF9933] text-sm font-semibold">Public Accountability Dashboard</p>
             </div>
           </div>
@@ -305,7 +305,7 @@ export const PublicDashboard: React.FC = () => {
         </div>
 
         <div className="text-center text-xs text-gray-400 pb-4">
-          Smart Bharat · Public Accountability Dashboard · Data updated every 15 minutes
+          Nivaran · Public Accountability Dashboard · Data updated every 15 minutes
           <br />Powered by Gemini AI · Firebase · Google Cloud
         </div>
       </div>

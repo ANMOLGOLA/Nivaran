@@ -15,7 +15,7 @@ export const AiChatWidget: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: 'ai',
-      text: 'Namaste! I am your Smart Bharat companion. You can ask me details about PM-KISAN, Ayushman Bharat, or PMAY. I can also help you file a civic complaint or detect your language!'
+      text: 'Namaste! I am your Nivaran companion. You can ask me details about PM-KISAN, Ayushman Bharat, or PMAY. I can also help you file a civic complaint or detect your language!'
     }
   ]);
   const [input, setInput] = useState('');
@@ -67,7 +67,7 @@ export const AiChatWidget: React.FC = () => {
 
         if (data.detectedLanguage && data.detectedLanguage !== 'en') {
           toast.info(`Language Detected: ${data.detectedLanguage.toUpperCase()}`, {
-            description: `Smart Bharat translated and responded in your language.`,
+            description: `Nivaran translated and responded in your language.`,
             duration: 4000
           });
         }
@@ -179,9 +179,7 @@ export const AiChatWidget: React.FC = () => {
             {/* Header */}
             <div className="bg-[#0B1F3A] border-b border-gray-800 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-saffron flex items-center justify-center">
-                  <span className="text-navy font-bold text-sm">SB</span>
-                </div>
+                <img src="/nivaran-logo.svg" alt="Nivaran Logo" className="w-8 h-8 bg-white rounded-full shadow-sm p-0.5" />
                 <div>
                   <h3 className="font-bold text-sm text-saffron tracking-wide">AI Companion</h3>
                   <span className="text-[10px] text-green flex items-center gap-1">

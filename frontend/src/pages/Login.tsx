@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { toast } from 'sonner';
-import { Shield, Globe, Zap, MapPin, MessageSquare, BarChart3, Loader2 } from 'lucide-react';
+import { Shield, Globe, MapPin, MessageSquare, BarChart3, Loader2 } from 'lucide-react';
 
 interface LoginProps {
   onLoginSuccess: (user: any) => void;
@@ -70,41 +70,12 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       console.error(err);
       if (err.code === 'auth/popup-closed-by-user') {
         toast.info('Sign-in cancelled');
-      } else if (err.code === 'auth/network-request-failed' || err.message?.includes('api-key-not-valid')) {
-        // Demo mode — Firebase not configured yet, use mock login
-        toast.success('Demo Mode: Logging in as demo citizen', {
-          description: 'Configure Firebase credentials to enable real Google OAuth'
-        });
-        onLoginSuccess({
-          id: 'demo-user-001',
-          name: 'Demo Citizen',
-          email: 'demo@smartbharat.gov.in',
-          phone: '9876543210',
-          role: 'CITIZEN',
-          languagePref: 'en',
-          photoURL: null,
-          idToken: 'demo-token',
-        });
       } else {
         toast.error('Sign-in failed. Please try again.');
       }
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDemoLogin = () => {
-    toast.success('Logged in as Demo Citizen');
-    onLoginSuccess({
-      id: 'demo-user-001',
-      name: 'Arjun Sharma',
-      email: 'arjun@smartbharat.gov.in',
-      phone: '9876543210',
-      role: 'CITIZEN',
-      languagePref: 'hi',
-      photoURL: null,
-      idToken: 'demo-token',
-    });
   };
 
   return (
@@ -134,11 +105,9 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           className="flex-1 text-white text-center lg:text-left"
         >
           <div className="flex items-center gap-3 justify-center lg:justify-start mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FF9933] to-orange-600 flex items-center justify-center shadow-lg">
-              <span className="text-white font-black text-xl">SB</span>
-            </div>
+              <img src="/nivaran-logo.svg" alt="Nivaran Logo" className="w-16 h-16 bg-white rounded-full shadow-lg" />
             <div>
-              <h1 className="text-2xl font-black text-[#FF9933] tracking-wider leading-none">SMART BHARAT</h1>
+              <h1 className="text-2xl font-black text-[#FF9933] tracking-wider leading-none">NIVARAN</h1>
               <p className="text-xs text-gray-400 tracking-widest uppercase">AI Civic Companion</p>
             </div>
           </div>
@@ -194,7 +163,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                 <Shield className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-white text-2xl font-black">Citizen Login</h3>
-              <p className="text-gray-400 text-sm mt-2">Access your Smart Bharat dashboard</p>
+              <p className="text-gray-400 text-sm mt-2">Access your Nivaran dashboard</p>
             </div>
 
             {/* Google Sign In */}
@@ -219,26 +188,8 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               {loading ? 'Signing in...' : 'Continue with Google'}
             </motion.button>
 
-            <div className="flex items-center gap-3 my-5">
-              <div className="flex-1 h-px bg-white bg-opacity-10" />
-              <span className="text-gray-500 text-xs uppercase tracking-wider">or</span>
-              <div className="flex-1 h-px bg-white bg-opacity-10" />
-            </div>
-
-            {/* Demo Login */}
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={handleDemoLogin}
-              id="demo-login-btn"
-              className="w-full flex items-center justify-center gap-2 bg-transparent border border-white border-opacity-20 text-gray-300 hover:text-white hover:border-opacity-40 font-semibold py-3.5 px-6 rounded-2xl transition-all text-sm"
-            >
-              <Zap className="w-4 h-4 text-[#FF9933]" />
-              Try Demo Account (No Login Required)
-            </motion.button>
-
             <p className="text-center text-gray-600 text-xs mt-6">
-              By signing in, you agree to Smart Bharat's Terms of Service.<br/>
+              By signing in, you agree to Nivaran's Terms of Service.<br/>
               Powered by Firebase Authentication & Google Cloud.
             </p>
           </div>

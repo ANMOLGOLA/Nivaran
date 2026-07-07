@@ -64,7 +64,7 @@ export const chatWithAi = async (req: Request, res: Response): Promise<void> => 
     // 4. Query LLM or Fall back to rules-based responder
     if (GEMINI_API_KEY) {
       try {
-        const systemPrompt = `You are a helpful government AI companion named "Smart Bharat".
+        const systemPrompt = `You are a helpful government AI companion named "Nivaran".
 Your goal is to answer citizen questions about government schemes and civic issues.
 Keep your answers professional, direct, and concise (max 3-4 sentences).
 
@@ -132,7 +132,7 @@ function generateRulesBasedReply(query: string, context: string, isComplaint: bo
     return `Based on official records:\n\n${context}\n\nFor further help, please specify the details of the scheme you need help with.`;
   }
 
-  return 'I am your Smart Bharat AI Companion. You can ask me details about PM-KISAN, Ayushman Bharat health insurance, or Pradhan Mantri Awas Yojana (PMAY). How may I assist you today?';
+  return 'I am your Nivaran AI Companion. You can ask me details about PM-KISAN, Ayushman Bharat health insurance, or Pradhan Mantri Awas Yojana (PMAY). How may I assist you today?';
 }
 
 /**

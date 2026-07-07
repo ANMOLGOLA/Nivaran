@@ -287,7 +287,7 @@ export const YojanaPortal: React.FC<Props> = () => {
     const header = `SMART BHARAT — Scheme Document Checklist\n========================================\n\n`;
     const body = `Scheme Name: ${scheme.name}\nScope: ${scheme.scope === 'national' ? 'National' : scheme.state + ' State'}\nBenefits: ${scheme.benefits}\n\n[ ] Check when you have the document ready:\n\n` +
       scheme.requiredDocuments.map(d => `[ ] ${d}\n   (Required for verification)\n`).join('\n') +
-      `\nGenerated for: Smart Bharat Citizen\nDate: ${new Date().toLocaleDateString('en-IN')}\n\nDisclaimer: Always carry original documents and 2 photocopies to the government department.`;
+      `\nGenerated for: Nivaran Citizen\nDate: ${new Date().toLocaleDateString('en-IN')}\n\nDisclaimer: Always carry original documents and 2 photocopies to the government department.`;
 
     const blob = new Blob([header + body], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -352,7 +352,7 @@ export const YojanaPortal: React.FC<Props> = () => {
   const downloadReceipt = () => {
     if (!applyScheme || !submittedAppId) return;
     const header = `SMART BHARAT — Scheme Application Receipt\n=========================================\n\n`;
-    const body = `Registration ID: ${submittedAppId}\nScheme Name: ${applyScheme.name}\nApplicant Name: ${applicationForm.fullName}\nPhone Number: +91 ${applicationForm.phone}\nAadhaar Number: XXXXXXXX${applicationForm.aadhaar.slice(-4)}\nSubmission Date: ${new Date().toLocaleDateString('en-IN')}\nStatus: PENDING VERIFICATION\n\nNotes:\n- Your application has been successfully routed to the respective department.\n- Track your status on the Smart Bharat portal using your Registration ID.\n- A verification officer will contact you if additional details are required.`;
+    const body = `Registration ID: ${submittedAppId}\nScheme Name: ${applyScheme.name}\nApplicant Name: ${applicationForm.fullName}\nPhone Number: +91 ${applicationForm.phone}\nAadhaar Number: XXXXXXXX${applicationForm.aadhaar.slice(-4)}\nSubmission Date: ${new Date().toLocaleDateString('en-IN')}\nStatus: PENDING VERIFICATION\n\nNotes:\n- Your application has been successfully routed to the respective department.\n- Track your status on the Nivaran portal using your Registration ID.\n- A verification officer will contact you if additional details are required.`;
 
     const blob = new Blob([header + body], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);

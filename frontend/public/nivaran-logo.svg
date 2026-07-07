@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <!-- Background circle (optional, transparent here) -->
+  <circle cx="200" cy="180" r="140" fill="none" stroke="#001B40" stroke-width="8" stroke-dasharray="0 0 200 600" stroke-linecap="round"/>
+  
+  <!-- Outer Arch -->
+  <path d="M 60 180 A 140 140 0 0 1 340 180" fill="none" stroke="#001B40" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- Figures -->
+  <!-- Left Figure (Saffron) -->
+  <circle cx="150" cy="120" r="18" fill="#F47B20"/>
+  <path d="M 132 180 Q 132 140 150 140 Q 168 140 168 180 L 168 220 L 132 220 Z" fill="#F47B20" rx="10"/>
+
+  <!-- Center Figure (Navy Blue - taller) -->
+  <circle cx="200" cy="100" r="22" fill="#001B40"/>
+  <path d="M 178 180 Q 178 130 200 130 Q 222 130 222 180 L 222 240 L 178 240 Z" fill="#001B40"/>
+
+  <!-- Right Figure (Green) -->
+  <circle cx="250" cy="120" r="18" fill="#138840"/>
+  <path d="M 232 180 Q 232 140 250 140 Q 268 140 268 180 L 268 220 L 232 220 Z" fill="#138840"/>
+
+  <!-- Supporting Hands (Navy Blue) -->
+  <path d="M 60 200 Q 120 280 200 240 Q 190 260 200 280 Q 120 300 40 220 Z" fill="#001B40"/>
+  <path d="M 340 200 Q 280 280 200 240 Q 210 260 200 280 Q 280 300 360 220 Z" fill="#001B40"/>
+
+  <!-- Base shape smoothing the hands -->
+  <path d="M 180 255 L 200 270 L 220 255 L 200 300 Z" fill="#001B40"/>
+  
+  <path d="M 90 180 C 130 250, 180 270, 200 290 C 220 270, 270 250, 310 180 C 300 240, 250 270, 200 250 C 150 270, 100 240, 90 180" fill="#001B40"/>
+</svg>
