@@ -33,6 +33,13 @@ export const AiChatWidget: React.FC = () => {
     scrollToBottom();
   }, [messages, isOpen]);
 
+  // Listen for external open triggers
+  useEffect(() => {
+    const handleOpenChat = () => setIsOpen(true);
+    window.addEventListener('open-ai-chat', handleOpenChat as EventListener);
+    return () => window.removeEventListener('open-ai-chat', handleOpenChat as EventListener);
+  }, []);
+
   const handleSendMessage = async (textToSend: string) => {
     if (!textToSend.trim()) return;
 

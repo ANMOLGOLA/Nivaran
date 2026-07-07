@@ -140,7 +140,11 @@ export const DashboardHome: React.FC<Props> = React.memo(({ user }) => {
             <p className="text-gray-600 font-medium">Have questions about PM-KISAN, Ayushman Bharat, or filing a complaint? Chat instantly in your local language.</p>
           </div>
         </div>
-        <button aria-label="Start Conversation with AI" className="w-full md:w-auto bg-[#0B1F3A] text-white font-bold py-4 px-8 rounded-2xl hover:bg-gray-800 transition-colors flex-shrink-0 shadow-lg">
+        <button 
+          onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat'))}
+          aria-label="Start Conversation with AI" 
+          className="w-full md:w-auto bg-[#0B1F3A] text-white font-bold py-4 px-8 rounded-2xl hover:bg-gray-800 transition-colors flex-shrink-0 shadow-lg"
+        >
           Start Conversation
         </button>
       </motion.div>
