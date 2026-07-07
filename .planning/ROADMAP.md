@@ -5,7 +5,7 @@ This roadmap lays out the development phases for Smart Bharat: AI-Powered Civic 
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Auth** - Set up the boilerplate React Vite/Express backend, database schemas, and mocked OTP authentication.
+- [x] **Phase 1: Foundation & Auth** - Set up the boilerplate React Vite/Express backend, database schemas, and mocked OTP authentication.
 - [ ] **Phase 2: AI Assistant & RAG** - Implement conversational RAG-grounded chat with multilingual voice interaction.
 - [ ] **Phase 3: Issues Reporting & PostGIS** - Build complaint filing with media upload and PostGIS-based duplicate clustering.
 - [ ] **Phase 4: Tracking & Dashboard** - Implement SLA tracking, escalation auto-drafting, PWA support, and public metrics dashboard.
@@ -23,7 +23,7 @@ This roadmap lays out the development phases for Smart Bharat: AI-Powered Civic 
 **Plans**: 1 plan
 
 Plans:
-- [ ] 01-01: Set up React 18, Express backend, PostgreSQL integration, and OTP login page.
+- [x] 01-01: Set up React 18, Express backend, PostgreSQL integration, and OTP login page.
 
 ---
 
@@ -79,7 +79,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 0/1 | Not started | - |
+| 1. Foundation & Auth | 1/1 | Completed | 2026-07-07 |
 | 2. AI Assistant & RAG | 0/1 | Not started | - |
 | 3. Issues Reporting & PostGIS | 0/1 | Not started | - |
 | 4. Tracking & Dashboard | 0/1 | Not started | - |
