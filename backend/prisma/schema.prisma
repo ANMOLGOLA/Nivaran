@@ -1,0 +1,45 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+model User {
+  id           String      @id @default(uuid())
+  phone        String      @unique
+  name         String?
+  languagePref String      @default("en")
+  role         String      @default("CITIZEN") // CITIZEN, OFFICER, ADMIN
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  complaints   Complaint[]
+}
+
+model OtpSession {
+  id        String   @id @default(uuid())
+  phone     String   @unique
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Complaint {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    String
+  description String
+  photoUrl    String?
+  geoLat      Float?
+  geoLng      Float?
+  status      String   @default("FILED") // FILED, ACKNOWLEDGED, ASSIGNED, IN_PROGRESS, RESOLVED
+  department  String?
+  slaDeadline DateTime?
+  clusterId   String?
+  rating      Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
