@@ -17,12 +17,12 @@ const STATS = [
   { label: 'Schemes Delivered', value: '45L+', color: '#0B1F3A', trend: 'Across 412 districts' },
 ];
 
-export const DashboardHome: React.FC<Props> = ({ user }) => {
+export const DashboardHome: React.FC<Props> = React.memo(({ user }) => {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Suprabhat' : hour < 17 ? 'Namaskar' : 'Shubh Sandhya';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+    <main className="max-w-7xl mx-auto px-4 py-8 space-y-12" aria-label="Dashboard Home">
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -52,8 +52,8 @@ export const DashboardHome: React.FC<Props> = ({ user }) => {
           </p>
           
           <div className="flex flex-wrap items-center gap-4">
-            <a href="/report" className="bg-[#FF9933] hover:bg-orange-500 text-white font-bold py-4 px-8 rounded-2xl transition-all flex items-center gap-2 shadow-lg shadow-orange-500/30">
-              Take Action Now <ArrowRight className="w-5 h-5" />
+            <a href="/report" aria-label="Take Action Now" className="bg-[#FF9933] hover:bg-orange-500 text-white font-bold py-4 px-8 rounded-2xl transition-all flex items-center gap-2 shadow-lg shadow-orange-500/30">
+              Take Action Now <ArrowRight className="w-5 h-5" aria-hidden="true" />
             </a>
             <div className="flex items-center gap-2 bg-[#138808]/20 border border-[#138808]/40 px-6 py-4 rounded-2xl backdrop-blur-sm">
               <Shield className="w-5 h-5 text-[#138808]" />
@@ -77,6 +77,7 @@ export const DashboardHome: React.FC<Props> = ({ user }) => {
             <motion.a
               key={label}
               href={href}
+              aria-label={`Go to ${label}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.1 }}
@@ -85,8 +86,8 @@ export const DashboardHome: React.FC<Props> = ({ user }) => {
             >
               <div className="h-40 overflow-hidden relative">
                 <div className="absolute inset-0 bg-gray-900/20 group-hover:bg-transparent transition-colors z-10" />
-                <img src={img} alt={label} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
-                <div className="absolute bottom-4 left-4 z-20 bg-white/90 backdrop-blur-sm p-3 rounded-2xl shadow-lg">
+                <img src={img} alt={`${label} illustration`} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                <div className="absolute bottom-4 left-4 z-20 bg-white/90 backdrop-blur-sm p-3 rounded-2xl shadow-lg" aria-hidden="true">
                   <Icon className="w-6 h-6" style={{ color }} />
                 </div>
               </div>
@@ -139,10 +140,10 @@ export const DashboardHome: React.FC<Props> = ({ user }) => {
             <p className="text-gray-600 font-medium">Have questions about PM-KISAN, Ayushman Bharat, or filing a complaint? Chat instantly in your local language.</p>
           </div>
         </div>
-        <button className="w-full md:w-auto bg-[#0B1F3A] text-white font-bold py-4 px-8 rounded-2xl hover:bg-gray-800 transition-colors flex-shrink-0 shadow-lg">
+        <button aria-label="Start Conversation with AI" className="w-full md:w-auto bg-[#0B1F3A] text-white font-bold py-4 px-8 rounded-2xl hover:bg-gray-800 transition-colors flex-shrink-0 shadow-lg">
           Start Conversation
         </button>
       </motion.div>
-    </div>
+    </main>
   );
-};
+});
