@@ -1,152 +1,251 @@
 import React, { useState, useEffect } from 'react';
-import { Login } from './pages/Login';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import { ShieldAlert, LogOut, User as UserIcon, LayoutDashboard, Globe, AlertCircle } from 'lucide-react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebase';
+import { Login } from './pages/Login';
+import { DashboardHome } from './pages/DashboardHome';
+import { ReportIssuePage } from './pages/ReportIssuePage';
+import { MyComplaintsPage } from './pages/MyComplaintsPage';
+import { ComplaintDetailPage } from './pages/ComplaintDetailPage';
+import { PublicDashboard } from './pages/PublicDashboard';
 import { AiChatWidget } from './components/AiChatWidget';
+import { LayoutDashboard, MapPin, ListChecks, BarChart3, LogOut, Loader2 } from 'lucide-react';
 
-interface User {
+export interface AppUser {
   id: string;
-  phone: string;
   name: string;
+  email: string;
+  phone: string;
   role: string;
   languagePref: string;
+  photoURL: string | null;
+  idToken: string;
 }
 
+const NAV_LINKS = [
+  { path: '/dashboard', label: 'Home', icon: LayoutDashboard },
+  { path: '/report', label: 'Report Issue', icon: MapPin },
+  { path: '/my-complaints', label: 'My Complaints', icon: ListChecks },
+  { path: '/public-dashboard', label: 'Public Dashboard', icon: BarChart3 },
+];
+
+// ── Main App Shell (authenticated layout) ────────────────────────────────────
+const AppShell: React.FC<{ user: AppUser; onLogout: () => void; children: React.ReactNode }> = ({
+  user, onLogout, children
+}) => {
+  const location = useLocation();
+
+  return (
+    <div className="min-h-screen bg-[#F4F6FB] flex flex-col font-sans">
+      {/* Top Navbar */}
+      <header className="bg-[#0B1F3A] text-white border-b-4 border-[#FF9933] sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          {/* Logo */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF9933] to-orange-600 flex items-center justify-center shadow">
+              <span className="text-white font-black text-sm">SB</span>
+            </div>
+            <div className="hidden sm:block">
+              <p className="font-black tracking-wider text-[#FF9933] text-base leading-none">SMART BHARAT</p>
+              <p className="text-[10px] text-gray-400">AI Civic Companion</p>
+            </div>
+          </div>
+
+          {/* Nav Links */}
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map(({ path, label, icon: Icon }) => (
+              <a
+                key={path}
+                href={path}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                  location.pathname === path
+                    ? 'bg-[#FF9933] text-white'
+                    : 'text-gray-300 hover:text-white hover:bg-white hover:bg-opacity-10'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{label}</span>
+              </a>
+            ))}
+          </nav>
+
+          {/* User + Logout */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2">
+              {user.photoURL ? (
+                <img src={user.photoURL} alt={user.name} className="w-8 h-8 rounded-full border-2 border-[#FF9933]" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-[#FF9933] flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">{user.name?.[0]?.toUpperCase()}</span>
+                </div>
+              )}
+              <span className="text-sm font-semibold text-white hidden lg:block">{user.name?.split(' ')[0]}</span>
+            </div>
+            <button
+              onClick={onLogout}
+              className="flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-xl text-xs transition-all"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:block">Logout</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Nav */}
+        <div className="md:hidden flex border-t border-white border-opacity-10 overflow-x-auto">
+          {NAV_LINKS.map(({ path, label, icon: Icon }) => (
+            <a
+              key={path}
+              href={path}
+              className={`flex-1 flex flex-col items-center gap-1 py-2.5 px-2 text-[10px] font-semibold transition-all whitespace-nowrap ${
+                location.pathname === path
+                  ? 'text-[#FF9933] bg-white bg-opacity-5'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {label}
+            </a>
+          ))}
+        </div>
+      </header>
+
+      {/* Page Content */}
+      <main className="flex-grow">
+        {children}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-[#0B1F3A] border-t border-gray-800 py-4 text-center text-xs text-gray-500">
+        © 2026 Ministry of Electronics & IT, Government of India · Smart Bharat Platform
+      </footer>
+
+      {/* Floating AI Widget */}
+      <AiChatWidget />
+    </div>
+  );
+};
+
+// ── Root App ─────────────────────────────────────────────────────────────────
 const App: React.FC = () => {
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
-    const cachedToken = localStorage.getItem('sb_auth_token');
-    const cachedUser = localStorage.getItem('sb_auth_user');
-    if (cachedToken && cachedUser) {
-      setToken(cachedToken);
-      setUser(JSON.parse(cachedUser));
+    // Check cached user from demo login
+    const cached = localStorage.getItem('sb_user');
+    if (cached) {
+      try {
+        setUser(JSON.parse(cached));
+      } catch {}
     }
+
+    // Firebase auth state listener
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const cached = localStorage.getItem('sb_user');
+        if (!cached) {
+          const idToken = await firebaseUser.getIdToken();
+          const mappedUser: AppUser = {
+            id: firebaseUser.uid,
+            name: firebaseUser.displayName || 'Citizen',
+            email: firebaseUser.email || '',
+            phone: firebaseUser.phoneNumber || '',
+            role: 'CITIZEN',
+            languagePref: 'en',
+            photoURL: firebaseUser.photoURL,
+            idToken,
+          };
+          setUser(mappedUser);
+          localStorage.setItem('sb_user', JSON.stringify(mappedUser));
+        }
+      }
+      setAuthLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const handleLoginSuccess = (newToken: string, newUser: any) => {
-    localStorage.setItem('sb_auth_token', newToken);
-    localStorage.setItem('sb_auth_user', JSON.stringify(newUser));
-    setToken(newToken);
+  const handleLoginSuccess = (newUser: AppUser) => {
+    localStorage.setItem('sb_user', JSON.stringify(newUser));
     setUser(newUser);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('sb_auth_token');
-    localStorage.removeItem('sb_auth_user');
-    setToken(null);
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+    } catch {}
+    localStorage.removeItem('sb_user');
     setUser(null);
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      <Toaster position="top-right" richColors />
-      
-      {!token || !user ? (
-        <Login onLoginSuccess={handleLoginSuccess} />
-      ) : (
-        <div className="flex-grow flex flex-col">
-          {/* Dashboard Header */}
-          <header className="bg-[#0B1F3A] text-white border-b-4 border-[#FF9933]">
-            <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full border-2 border-saffron flex items-center justify-center bg-navy bg-opacity-80">
-                  <span className="text-saffron font-bold text-lg">SB</span>
-                </div>
-                <div>
-                  <h1 className="font-extrabold tracking-wider text-saffron text-lg">SMART BHARAT</h1>
-                  <p className="text-xs text-gray-300">AI-Powered Civic Engagement</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-navy-light rounded-full border border-gray-700 text-xs">
-                  <Globe className="w-4 h-4 text-saffron" />
-                  <span>Language: {user.languagePref.toUpperCase()}</span>
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl flex items-center gap-2 text-sm transition-all"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Log Out</span>
-                </button>
-              </div>
-            </div>
-          </header>
-
-          {/* Dashboard Content */}
-          <main className="flex-grow container mx-auto px-6 py-12">
-            <div className="max-w-4xl mx-auto space-y-8">
-              {/* Alert Notification */}
-              <div className="bg-amber-50 border-l-4 border-[#FF9933] p-4 rounded-r-xl flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-[#FF9933] flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-bold text-amber-950 text-sm">System Status: Demo/Hackathon Mode</h4>
-                  <p className="text-xs text-amber-900 mt-1">
-                    Your OTP authentication is currently operating in mock mode using SQLite. Subsequent phases (AI Assistant, Geolocation Issue Reporting, Track Complaint, and Dashboard) will be initialized sequentially.
-                  </p>
-                </div>
-              </div>
-
-              {/* Welcome Panel */}
-              <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
-                <div>
-                  <h2 className="text-3xl font-extrabold text-gray-900">Namaste, {user.name}!</h2>
-                  <p className="text-gray-500 text-sm mt-1">Welcome to your Smart Bharat citizen dashboard.</p>
-                </div>
-                <div className="flex items-center gap-3 px-4 py-2 bg-green bg-opacity-10 text-green-800 rounded-2xl border border-green border-opacity-25 font-bold text-sm">
-                  <ShieldAlert className="w-4 h-4" />
-                  <span>Verified Citizen Account</span>
-                </div>
-              </div>
-
-              {/* Citizen Details Card */}
-              <div className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-hidden">
-                <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
-                  <LayoutDashboard className="w-5 h-5 text-[#0B1F3A]" />
-                  <h3 className="font-bold text-gray-800">Your Identity & Profile</h3>
-                </div>
-                <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-3">
-                    <UserIcon className="w-8 h-8 text-[#0B1F3A] bg-gray-200 p-1.5 rounded-full" />
-                    <div>
-                      <span className="text-xs text-gray-400 block font-semibold uppercase">Name</span>
-                      <span className="font-bold text-gray-800">{user.name}</span>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-3">
-                    <UserIcon className="w-8 h-8 text-[#0B1F3A] bg-gray-200 p-1.5 rounded-full" />
-                    <div>
-                      <span className="text-xs text-gray-400 block font-semibold uppercase">Phone Number</span>
-                      <span className="font-bold text-gray-800 font-mono">+91 {user.phone}</span>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-3">
-                    <UserIcon className="w-8 h-8 text-[#0B1F3A] bg-gray-200 p-1.5 rounded-full" />
-                    <div>
-                      <span className="text-xs text-gray-400 block font-semibold uppercase">Role</span>
-                      <span className="font-bold text-[#138808]">{user.role}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </main>
-
-          {/* Footer */}
-          <footer className="bg-gray-100 border-t border-gray-200 py-6 text-center text-xs text-gray-400">
-            <p>© 2026 Ministry of Electronics & IT, Government of India. Powered by Smart Bharat.</p>
-          </footer>
-          
-          {/* AI Companion Widget */}
-          <AiChatWidget />
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#0B1F3A] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF9933] to-orange-600 flex items-center justify-center">
+            <span className="text-white font-black text-2xl">SB</span>
+          </div>
+          <Loader2 className="w-6 h-6 text-[#FF9933] animate-spin" />
+          <p className="text-gray-400 text-sm">Loading Smart Bharat...</p>
         </div>
-      )}
-    </div>
+      </div>
+    );
+  }
+
+  return (
+    <BrowserRouter>
+      <Toaster position="top-right" richColors />
+      <Routes>
+        {/* Public */}
+        <Route path="/public-dashboard" element={<PublicDashboard />} />
+
+        {/* Auth gate */}
+        {!user ? (
+          <>
+            <Route path="*" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route
+              path="/dashboard"
+              element={
+                <AppShell user={user} onLogout={handleLogout}>
+                  <DashboardHome user={user} />
+                </AppShell>
+              }
+            />
+            <Route
+              path="/report"
+              element={
+                <AppShell user={user} onLogout={handleLogout}>
+                  <ReportIssuePage user={user} />
+                </AppShell>
+              }
+            />
+            <Route
+              path="/my-complaints"
+              element={
+                <AppShell user={user} onLogout={handleLogout}>
+                  <MyComplaintsPage user={user} />
+                </AppShell>
+              }
+            />
+            <Route
+              path="/complaint/:id"
+              element={
+                <AppShell user={user} onLogout={handleLogout}>
+                  <ComplaintDetailPage user={user} />
+                </AppShell>
+              }
+            />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </>
+        )}
+      </Routes>
+    </BrowserRouter>
   );
 };
 

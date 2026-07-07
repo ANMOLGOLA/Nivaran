@@ -1,258 +1,249 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, Shield, ArrowRight, RefreshCw, KeyRound, CheckCircle2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase';
 import { toast } from 'sonner';
+import { Shield, Globe, Zap, MapPin, MessageSquare, BarChart3, Loader2 } from 'lucide-react';
 
 interface LoginProps {
-  onLoginSuccess: (token: string, user: any) => void;
+  onLoginSuccess: (user: any) => void;
 }
 
+const FEATURES = [
+  { icon: MessageSquare, label: 'AI Companion', desc: 'Multilingual voice-first assistance' },
+  { icon: MapPin, label: 'File Complaints', desc: 'Geo-tagged civic issue reporting' },
+  { icon: BarChart3, label: 'Track & Escalate', desc: 'Real-time status and SLA tracking' },
+  { icon: Globe, label: '8 Languages', desc: 'Hindi, Tamil, Telugu & more' },
+];
+
 export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
-  const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
-  const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [loading, setLoading] = useState(false);
 
-  const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!phone || phone.length < 10) {
-      toast.error('Please enter a valid 10-digit phone number');
-      return;
-    }
-
+  const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/request-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
-      });
-      const data = await response.json();
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      const idToken = await user.getIdToken();
 
-      if (data.success) {
-        setStep('otp');
-        // Custom Ashoka-colored mock SMS gateway simulation
-        toast.success(`OTP Sent!`, {
-          description: `[MOCK SMS] Your OTP is: ${data.mockOtp}`,
-          duration: 10000,
+      // Register/login with our backend
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName,
+          photoURL: user.photoURL,
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(`Welcome, ${user.displayName?.split(' ')[0]}!`, {
+          description: 'Logged in via Google'
+        });
+        onLoginSuccess({
+          ...data.user,
+          idToken,
+          photoURL: user.photoURL,
         });
       } else {
-        toast.error(data.error || 'Failed to send OTP');
+        // Firebase auth succeeded but backend registration failed — still allow login
+        // using Firebase user data directly (graceful degradation)
+        toast.success(`Welcome, ${user.displayName?.split(' ')[0]}!`);
+        onLoginSuccess({
+          id: user.uid,
+          name: user.displayName || 'Citizen',
+          email: user.email,
+          phone: '',
+          role: 'CITIZEN',
+          languagePref: 'en',
+          photoURL: user.photoURL,
+          idToken,
+        });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error('Connection error. Is the backend server running?');
+      if (err.code === 'auth/popup-closed-by-user') {
+        toast.info('Sign-in cancelled');
+      } else if (err.code === 'auth/network-request-failed' || err.message?.includes('api-key-not-valid')) {
+        // Demo mode — Firebase not configured yet, use mock login
+        toast.success('Demo Mode: Logging in as demo citizen', {
+          description: 'Configure Firebase credentials to enable real Google OAuth'
+        });
+        onLoginSuccess({
+          id: 'demo-user-001',
+          name: 'Demo Citizen',
+          email: 'demo@smartbharat.gov.in',
+          phone: '9876543210',
+          role: 'CITIZEN',
+          languagePref: 'en',
+          photoURL: null,
+          idToken: 'demo-token',
+        });
+      } else {
+        toast.error('Sign-in failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!otp || otp.length !== 6) {
-      toast.error('Please enter a 6-digit OTP');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, otp }),
-      });
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success('Login Successful!', {
-          description: `Welcome back, ${data.user.name}`,
-        });
-        onLoginSuccess(data.token, data.user);
-      } else {
-        toast.error(data.error || 'Invalid OTP');
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to verify OTP');
-    } finally {
-      setLoading(false);
-    }
+  const handleDemoLogin = () => {
+    toast.success('Logged in as Demo Citizen');
+    onLoginSuccess({
+      id: 'demo-user-001',
+      name: 'Arjun Sharma',
+      email: 'arjun@smartbharat.gov.in',
+      phone: '9876543210',
+      role: 'CITIZEN',
+      languagePref: 'hi',
+      photoURL: null,
+      idToken: 'demo-token',
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-navy-dark via-navy to-navy-light flex flex-col justify-between text-white font-sans relative overflow-hidden">
-      {/* Dynamic Background Accents */}
-      <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-saffron via-white to-green"></div>
-      
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-saffron opacity-5 blur-3xl rounded-full"></div>
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-green opacity-5 blur-3xl rounded-full"></div>
+    <div className="min-h-screen bg-[#0B1F3A] flex items-center justify-center overflow-hidden relative">
+      {/* Animated background blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{ scale: [1, 1.3, 1], rotate: [0, 180, 360] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          className="absolute -top-40 -left-40 w-96 h-96 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(255,153,51,0.15) 0%, transparent 70%)' }}
+        />
+        <motion.div
+          animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }}
+          transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+          className="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(19,136,8,0.12) 0%, transparent 70%)' }}
+        />
+      </div>
 
-      {/* Header */}
-      <header className="container mx-auto px-6 py-6 flex items-center justify-between z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full border-2 border-saffron flex items-center justify-center bg-navy bg-opacity-80">
-            <span className="text-saffron font-bold text-lg">SB</span>
+      <div className="relative z-10 flex flex-col lg:flex-row items-center gap-16 px-6 max-w-6xl mx-auto py-16">
+        {/* Left — Hero */}
+        <motion.div
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="flex-1 text-white text-center lg:text-left"
+        >
+          <div className="flex items-center gap-3 justify-center lg:justify-start mb-8">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FF9933] to-orange-600 flex items-center justify-center shadow-lg">
+              <span className="text-white font-black text-xl">SB</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-[#FF9933] tracking-wider leading-none">SMART BHARAT</h1>
+              <p className="text-xs text-gray-400 tracking-widest uppercase">AI Civic Companion</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-extrabold text-lg tracking-wider text-saffron">SMART BHARAT</h1>
-            <p className="text-xs text-gray-400">AI-Powered Civic Engagement</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-1 bg-navy-light rounded-full border border-gray-700 text-xs">
-          <span className="w-2 h-2 rounded-full bg-green animate-pulse"></span>
-          <span>Digital India Stack</span>
-        </div>
-      </header>
 
-      {/* Main Container */}
-      <main className="flex-grow flex items-center justify-center px-4 py-12 z-10">
-        <div className="w-full max-w-md">
-          {/* Main Card */}
-          <div className="bg-navy bg-opacity-70 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-            
-            {/* Top Card Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-navy-light border border-gray-700 rounded-2xl flex items-center justify-center shadow-inner">
-                <Shield className="w-8 h-8 text-saffron" />
-              </div>
+          <h2 className="text-5xl lg:text-6xl font-black leading-[1.05] mb-6">
+            Your Voice.<br />
+            <span className="text-[#FF9933]">Your City.</span><br />
+            <span className="text-[#138808]">Your Rights.</span>
+          </h2>
+
+          <p className="text-gray-400 text-lg mb-10 max-w-md mx-auto lg:mx-0">
+            India's first AI-powered civic companion. File complaints, access government schemes, and hold officials accountable — in your language.
+          </p>
+
+          <div className="grid grid-cols-2 gap-4">
+            {FEATURES.map(({ icon: Icon, label, desc }) => (
+              <motion.div
+                key={label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex items-start gap-3 bg-white bg-opacity-5 border border-white border-opacity-10 rounded-2xl p-4"
+              >
+                <div className="w-9 h-9 bg-[#FF9933] bg-opacity-20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-4 h-4 text-[#FF9933]" />
+                </div>
+                <div>
+                  <p className="font-bold text-white text-sm">{label}</p>
+                  <p className="text-gray-500 text-xs mt-0.5">{desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Right — Login Card */}
+        <motion.div
+          initial={{ opacity: 0, x: 40, scale: 0.95 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="w-full max-w-md"
+        >
+          <div className="bg-white bg-opacity-5 backdrop-blur-xl border border-white border-opacity-10 rounded-3xl p-8 shadow-2xl">
+            {/* Tricolor accent line */}
+            <div className="flex h-1.5 rounded-full overflow-hidden mb-8">
+              <div className="flex-1 bg-[#FF9933]" />
+              <div className="flex-1 bg-white bg-opacity-30" />
+              <div className="flex-1 bg-[#138808]" />
             </div>
 
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold tracking-tight">Citizen Verification</h2>
-              <p className="text-gray-400 text-sm mt-1">
-                {step === 'phone' 
-                  ? 'Enter your mobile number to receive a secure OTP' 
-                  : 'Enter the 6-digit OTP code sent to your phone'}
-              </p>
+              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-[#FF9933] to-orange-600 rounded-2xl flex items-center justify-center mb-4 shadow-xl">
+                <Shield className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-white text-2xl font-black">Citizen Login</h3>
+              <p className="text-gray-400 text-sm mt-2">Access your Smart Bharat dashboard</p>
             </div>
 
-            <AnimatePresence mode="wait">
-              {step === 'phone' ? (
-                <motion.form
-                  key="phone-form"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                  onSubmit={handleSendOtp}
-                  className="space-y-6"
-                >
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-gray-400 block">
-                      Mobile Number
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                        <span className="text-sm font-semibold pr-2 border-r border-gray-700">+91</span>
-                        <Phone className="w-4 h-4 ml-2" />
-                      </div>
-                      <input
-                        type="tel"
-                        maxLength={10}
-                        required
-                        placeholder="98765 43210"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                        className="w-full bg-navy-dark border border-gray-800 rounded-2xl py-4 pl-24 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-saffron focus:ring-1 focus:ring-saffron transition-all text-lg font-mono tracking-widest"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading || phone.length < 10}
-                    className="w-full bg-gradient-to-r from-saffron to-orange-500 hover:from-saffron hover:to-saffron text-navy font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-saffron/10 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none"
-                  >
-                    {loading ? (
-                      <RefreshCw className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <>
-                        <span>Get Verification Code</span>
-                        <ArrowRight className="w-5 h-5" />
-                      </>
-                    )}
-                  </button>
-                </motion.form>
+            {/* Google Sign In */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              id="google-signin-btn"
+              className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-bold py-4 px-6 rounded-2xl hover:bg-gray-50 transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed text-base"
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
               ) : (
-                <motion.form
-                  key="otp-form"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  onSubmit={handleVerifyOtp}
-                  className="space-y-6"
-                >
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-xs font-semibold uppercase tracking-wider text-gray-400 block">
-                        Enter 6-Digit OTP
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => setStep('phone')}
-                        className="text-xs text-saffron hover:underline focus:outline-none"
-                      >
-                        Change number
-                      </button>
-                    </div>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                        <KeyRound className="w-4 h-4" />
-                      </div>
-                      <input
-                        type="text"
-                        maxLength={6}
-                        required
-                        placeholder="••••••"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                        className="w-full bg-navy-dark border border-gray-800 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-500 text-center text-2xl font-mono tracking-widest focus:outline-none focus:border-green focus:ring-1 focus:ring-green transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading || otp.length !== 6}
-                    className="w-full bg-gradient-to-r from-green to-emerald-600 hover:from-green hover:to-green text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-green/10 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none"
-                  >
-                    {loading ? (
-                      <RefreshCw className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-5 h-5" />
-                        <span>Verify & Log In</span>
-                      </>
-                    )}
-                  </button>
-
-                  <div className="text-center">
-                    <button
-                      type="button"
-                      onClick={handleSendOtp}
-                      className="text-xs text-gray-400 hover:text-white transition-colors"
-                    >
-                      Didn't receive code? Resend OTP
-                    </button>
-                  </div>
-                </motion.form>
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
               )}
-            </AnimatePresence>
-          </div>
+              {loading ? 'Signing in...' : 'Continue with Google'}
+            </motion.button>
 
-          {/* Secure Badge */}
-          <div className="mt-8 flex justify-center items-center gap-2 text-xs text-gray-400">
-            <Shield className="w-4 h-4 text-green" />
-            <span>Secured with standard 256-bit encryption</span>
-          </div>
-        </div>
-      </main>
+            <div className="flex items-center gap-3 my-5">
+              <div className="flex-1 h-px bg-white bg-opacity-10" />
+              <span className="text-gray-500 text-xs uppercase tracking-wider">or</span>
+              <div className="flex-1 h-px bg-white bg-opacity-10" />
+            </div>
 
-      {/* Footer */}
-      <footer className="container mx-auto px-6 py-6 text-center text-xs text-gray-500 z-10 border-t border-gray-900 border-opacity-40">
-        <p>© 2026 Ministry of Electronics & IT, Government of India. Mock Project.</p>
-      </footer>
+            {/* Demo Login */}
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              onClick={handleDemoLogin}
+              id="demo-login-btn"
+              className="w-full flex items-center justify-center gap-2 bg-transparent border border-white border-opacity-20 text-gray-300 hover:text-white hover:border-opacity-40 font-semibold py-3.5 px-6 rounded-2xl transition-all text-sm"
+            >
+              <Zap className="w-4 h-4 text-[#FF9933]" />
+              Try Demo Account (No Login Required)
+            </motion.button>
+
+            <p className="text-center text-gray-600 text-xs mt-6">
+              By signing in, you agree to Smart Bharat's Terms of Service.<br/>
+              Powered by Firebase Authentication & Google Cloud.
+            </p>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };
