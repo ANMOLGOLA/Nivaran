@@ -8,7 +8,7 @@ import { DashboardHome } from './pages/DashboardHome';
 import { ReportIssuePage } from './pages/ReportIssuePage';
 import { MyComplaintsPage } from './pages/MyComplaintsPage';
 import { ComplaintDetailPage } from './pages/ComplaintDetailPage';
-import { SchemesPage } from './pages/SchemesPage';
+import { YojanaPortal } from './pages/YojanaPortal';
 import { PublicDashboard } from './pages/PublicDashboard';
 import { AiChatWidget } from './components/AiChatWidget';
 import { LayoutDashboard, MapPin, ListChecks, BarChart3, LogOut, Loader2, Globe } from 'lucide-react';
@@ -239,7 +239,7 @@ const App: React.FC = () => {
               path="/schemes"
               element={
                 <AppShell user={user} onLogout={handleLogout}>
-                  <SchemesPage user={user} />
+                  <YojanaPortal user={user} />
                 </AppShell>
               }
             />
