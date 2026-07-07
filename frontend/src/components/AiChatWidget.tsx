@@ -55,6 +55,7 @@ export const AiChatWidget: React.FC = () => {
         })
       });
 
+      if (!response.ok) throw new Error('Backend not reachable');
       const data = await response.json();
 
       if (data.success) {
@@ -72,11 +73,20 @@ export const AiChatWidget: React.FC = () => {
           });
         }
       } else {
-        toast.error(data.error || 'Failed to get response');
+        throw new Error(data.error || 'Failed to get response');
       }
     } catch (err) {
       console.error(err);
-      toast.error('Network error. Is the server running?');
+      // Fallback for Demo Mode when backend is down
+      const isComplaint = textToSend.toLowerCase().includes('complaint') || textToSend.toLowerCase().includes('issue');
+      
+      setMessages(prev => [...prev, {
+        sender: 'ai',
+        text: isComplaint 
+          ? "I understand you want to report an issue. I can help you route this to the correct department immediately."
+          : "I am operating in Demo Mode. PM-KISAN provides ₹6,000/year to eligible farmers, and Ayushman Bharat offers up to ₹5 Lakh in health insurance! What would you like to know?",
+        redirect: isComplaint ? 'report' : undefined
+      }]);
     } finally {
       setLoading(false);
     }
