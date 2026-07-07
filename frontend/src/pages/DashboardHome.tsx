@@ -6,9 +6,9 @@ import type { AppUser } from '../App';
 interface Props { user: AppUser }
 
 const QUICK_ACTIONS = [
-  { icon: MapPin, label: 'Report Issue', desc: 'File civic complaints instantly', href: '/report', color: '#FF9933', bg: 'rgba(255,153,51,0.1)', img: 'https://images.unsplash.com/photo-1588716591825-80f2d48348d2?auto=format&fit=crop&q=80&w=400' },
-  { icon: HeartHandshake, label: 'Govt Schemes', desc: 'Find benefits you are eligible for', href: '/schemes', color: '#138808', bg: 'rgba(19,136,8,0.1)', img: 'https://images.unsplash.com/photo-1596414442651-6d7ab7ce6051?auto=format&fit=crop&q=80&w=400' },
-  { icon: BarChart3, label: 'City Dashboard', desc: 'Track local resolution metrics', href: '/public-dashboard', color: '#0B1F3A', bg: 'rgba(11,31,58,0.08)', img: 'https://images.unsplash.com/photo-1512341689857-198e7e2f3ca8?auto=format&fit=crop&q=80&w=400' },
+  { icon: MapPin, label: 'Report Issue', desc: 'File civic complaints instantly', href: '/report', color: '#FF9933', bg: 'rgba(255,153,51,0.1)', img: 'https://images.unsplash.com/photo-1506869640319-ce1c24e0735b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
+  { icon: HeartHandshake, label: 'Govt Schemes', desc: 'Find benefits you are eligible for', href: '/schemes', color: '#138808', bg: 'rgba(19,136,8,0.1)', img: 'https://images.unsplash.com/photo-1532375810565-ffa15cd8fb61?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
+  { icon: BarChart3, label: 'City Dashboard', desc: 'Track local resolution metrics', href: '/public-dashboard', color: '#0B1F3A', bg: 'rgba(11,31,58,0.08)', img: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
 ];
 
 const STATS = [
@@ -30,7 +30,7 @@ export const DashboardHome: React.FC<Props> = ({ user }) => {
         className="relative rounded-[2rem] overflow-hidden shadow-2xl bg-[#0B1F3A] min-h-[360px] flex items-center"
       >
         <img 
-          src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&q=80&w=1600" 
+          src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
           alt="India Heritage" 
           className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay"
         />
