@@ -40,6 +40,11 @@ const NAV_LINKS = [
   { path: '/public-dashboard', labelKey: 'publicDashboard', icon: BarChart3 },
 ];
 
+const ProtectedRoute = ({ user, children }: { user: AppUser | null; children: React.ReactNode }) => {
+  if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+};
+
 // ── Profile Dropdown Component ────────────────────────────────────────────────
 const ProfileDropdown: React.FC<{ user: AppUser; onLogout: () => void }> = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -352,14 +357,42 @@ const AppContent: React.FC = () => {
           </>
         ) : (
           <>
+            <Route path="/dashboard" element={
+              <ProtectedRoute user={user}>
+                <AppShell user={user} onLogout={handleLogout}><DashboardHome user={user} /></AppShell>
+              </ProtectedRoute>
+            } />
+            <Route path="/report" element={
+              <ProtectedRoute user={user}>
+                <AppShell user={user} onLogout={handleLogout}><ReportIssuePage user={user} /></AppShell>
+              </ProtectedRoute>
+            } />
+            <Route path="/my-complaints" element={
+              <ProtectedRoute user={user}>
+                <AppShell user={user} onLogout={handleLogout}><MyComplaintsPage user={user} /></AppShell>
+              </ProtectedRoute>
+            } />
+            <Route path="/schemes" element={
+              <ProtectedRoute user={user}>
+                <AppShell user={user} onLogout={handleLogout}><YojanaPortal user={user} /></AppShell>
+              </ProtectedRoute>
+            } />
+            <Route path="/complaint/:id" element={
+              <ProtectedRoute user={user}>
+                <AppShell user={user} onLogout={handleLogout}><ComplaintDetailPage user={user} /></AppShell>
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute user={user}>
+                <AppShell user={user} onLogout={handleLogout}><ProfilePage user={user} /></AppShell>
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute user={user}>
+                <AppShell user={user} onLogout={handleLogout}><SettingsPage user={user} /></AppShell>
+              </ProtectedRoute>
+            } />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<AppShell user={user} onLogout={handleLogout}><DashboardHome user={user} /></AppShell>} />
-            <Route path="/report" element={<AppShell user={user} onLogout={handleLogout}><ReportIssuePage user={user} /></AppShell>} />
-            <Route path="/my-complaints" element={<AppShell user={user} onLogout={handleLogout}><MyComplaintsPage user={user} /></AppShell>} />
-            <Route path="/schemes" element={<AppShell user={user} onLogout={handleLogout}><YojanaPortal user={user} /></AppShell>} />
-            <Route path="/complaint/:id" element={<AppShell user={user} onLogout={handleLogout}><ComplaintDetailPage user={user} /></AppShell>} />
-            <Route path="/profile" element={<AppShell user={user} onLogout={handleLogout}><ProfilePage user={user} /></AppShell>} />
-            <Route path="/settings" element={<AppShell user={user} onLogout={handleLogout}><SettingsPage user={user} /></AppShell>} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </>
         )}

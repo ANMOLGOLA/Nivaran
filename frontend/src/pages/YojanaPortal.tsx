@@ -519,12 +519,14 @@ export const YojanaPortal: React.FC<Props> = () => {
 
               {/* Action Buttons */}
               <div className="p-4 bg-gray-50 border-t border-gray-100 flex items-center gap-2">
-                <button
-                  onClick={() => setDetailScheme(scheme)}
+                <a
+                  href={scheme.applyLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex-1 bg-[#0B1F3A] hover:bg-[#1a3a6e] text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1"
                 >
                   Apply & Details <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                </a>
                 <button
                   onClick={() => downloadChecklist(scheme)}
                   title="Download Document Checklist"

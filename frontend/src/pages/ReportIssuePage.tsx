@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import DOMPurify from 'dompurify';
 import {
   MapPin, Camera, Mic, CheckCircle2,
   ChevronRight, Loader2, Upload, X, AlertTriangle
@@ -130,8 +131,8 @@ export const ReportIssuePage: React.FC<Props> = ({ user }) => {
     try {
       const payload = {
         uid: user.id,
-        title: form.title || `${form.categoryLabel} issue near ${form.ward}`,
-        description: form.description,
+        title: DOMPurify.sanitize(form.title || `${form.categoryLabel} issue near ${form.ward}`),
+        description: DOMPurify.sanitize(form.description),
         category: form.category,
         department: form.department,
         lat: form.lat,
